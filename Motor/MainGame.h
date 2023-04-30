@@ -2,6 +2,7 @@
 #include <SDL/SDL.h>
 #include <GL/eglew.h>
 #include "Sprite.h"
+#include "HLSLProgram.h"
 
 enum class GameState {
 	PLAY,EXIT
@@ -16,6 +17,9 @@ private:
 	void init();
 	Sprite sprite;
 	void processInput();
+	HLSLProgram program;
+	void initShaders();
+	float time;
 
 public:
 	MainGame();
