@@ -45,15 +45,12 @@ void MainGame::init() {
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	initShaders();
-<<<<<<< Updated upstream
-=======
 	/*TA1
 	sprites.push_back(Sprite());
 	sprites.push_back(Sprite());
 	*/
 	timer = clock();
 
->>>>>>> Stashed changes
 }
 
 void MainGame::draw() {
@@ -62,13 +59,12 @@ void MainGame::draw() {
 	program.use();
 	GLuint timeLocation = program.getUniformLocation("time");
 	glUniform1f(timeLocation, time);
-<<<<<<< Updated upstream
 	time += 0.02; //asi se ve lindo uwu
 	sprite.draw();
 	program.unuse();
 	//si tengo elementos actualizo
 	SDL_GL_SwapWindow(window);
-=======
+
 	time += 0.02;
 	GLuint imageLocation = program.getUniformLocation("myImage");
 	glUniform1i(imageLocation, 0);
@@ -83,26 +79,16 @@ void MainGame::draw() {
 	
 	program.unuse();
 	window.swapWindow();
-
-
->>>>>>> Stashed changes
 }
 
 void MainGame::run() {
 	init();
-<<<<<<< Updated upstream
 	sprite.init(-1, -1, 1, 1);
-=======
 	/* TA1
 	sprites.at(0).init(-1, -1, 1, 1, "Textures/imagen.png");
 	sprites.at(1).init(0.09, 0.09, 1, 1, "Textures/imagen.png");
 	*/
-	//semilla para pos aleatorias
 	
-
-	
-	
->>>>>>> Stashed changes
 	update();
 }
 
@@ -113,7 +99,7 @@ void MainGame::update() {
 		processInput();
 	}
 }
-<<<<<<< Updated upstream
+
 void MainGame::initShaders() {
 	program.compileShaders("Shaders/colorShaderVert.txt", "Shaders/colorShaderFrag.txt");
 	program.addAtribute("vertexPosition");
@@ -121,7 +107,6 @@ void MainGame::initShaders() {
 	program.linkShader();
 }
 
-=======
 
 void MainGame::addSquares() {
 	time_t now;
@@ -140,4 +125,3 @@ void MainGame::addSquares() {
 		timer = clock();
 	}
 }
->>>>>>> Stashed changes
