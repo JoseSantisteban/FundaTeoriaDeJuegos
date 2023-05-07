@@ -45,6 +45,15 @@ void MainGame::init() {
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	initShaders();
+<<<<<<< Updated upstream
+=======
+	/*TA1
+	sprites.push_back(Sprite());
+	sprites.push_back(Sprite());
+	*/
+	timer = clock();
+
+>>>>>>> Stashed changes
 }
 
 void MainGame::draw() {
@@ -53,25 +62,58 @@ void MainGame::draw() {
 	program.use();
 	GLuint timeLocation = program.getUniformLocation("time");
 	glUniform1f(timeLocation, time);
+<<<<<<< Updated upstream
 	time += 0.02; //asi se ve lindo uwu
 	sprite.draw();
 	program.unuse();
 	//si tengo elementos actualizo
 	SDL_GL_SwapWindow(window);
+=======
+	time += 0.02;
+	GLuint imageLocation = program.getUniformLocation("myImage");
+	glUniform1i(imageLocation, 0);
+	/*TA1
+	sprites.at(0).draw();
+	sprites.at(1).draw();
+	*/
+	for (int i = 0; i < sprites.size(); i++)
+	{
+		sprites.at(i).draw();
+	}
+	
+	program.unuse();
+	window.swapWindow();
+
+
+>>>>>>> Stashed changes
 }
 
 void MainGame::run() {
 	init();
+<<<<<<< Updated upstream
 	sprite.init(-1, -1, 1, 1);
+=======
+	/* TA1
+	sprites.at(0).init(-1, -1, 1, 1, "Textures/imagen.png");
+	sprites.at(1).init(0.09, 0.09, 1, 1, "Textures/imagen.png");
+	*/
+	//semilla para pos aleatorias
+	
+
+	
+	
+>>>>>>> Stashed changes
 	update();
 }
 
 void MainGame::update() {
 	while (gameState != GameState::EXIT) {
 		draw();
+		addSquares();
 		processInput();
 	}
 }
+<<<<<<< Updated upstream
 void MainGame::initShaders() {
 	program.compileShaders("Shaders/colorShaderVert.txt", "Shaders/colorShaderFrag.txt");
 	program.addAtribute("vertexPosition");
@@ -79,3 +121,23 @@ void MainGame::initShaders() {
 	program.linkShader();
 }
 
+=======
+
+void MainGame::addSquares() {
+	time_t now;
+	now = clock();
+	if ((now - timer) / CLOCKS_PER_SEC == 3) {
+		sprites.push_back(Sprite());
+		for (int i = 0; i < sprites.size(); i++)
+		{
+			random_device rd;
+			mt19937 gen(rd());
+			uniform_real_distribution<> dis(-1.0, 1.0);
+			float a = dis(gen);
+			float b = dis(gen);
+			sprites.at(i).init(a, b, 1, 1, "Textures/imagen.png");
+		}
+		timer = clock();
+	}
+}
+>>>>>>> Stashed changes
