@@ -3,8 +3,6 @@
 #include <GL/eglew.h>
 #include "Sprite.h"
 #include "HLSLProgram.h"
-<<<<<<< Updated upstream
-=======
 #include "Window.h"
 #include "Camera2D.h"
 #include "InputManager.h"
@@ -13,7 +11,6 @@
 #include "Human.h"
 #include "Zombie.h"
 #include "SpriteBatch.h"
->>>>>>> Stashed changes
 
 enum class GameState {
 	PLAY,EXIT
@@ -39,13 +36,8 @@ private:
 	void initLevel();
 	void processInput();
 	void initShaders();
-<<<<<<< Updated upstream
-	float time;
-
-=======
 	void handleInput();
 	void updateElements();
->>>>>>> Stashed changes
 public:
 	MainGame();
 	~MainGame();

@@ -92,8 +92,6 @@ void MainGame::init() {
 	glClearColor(0.7f, 0.7f, 0.7f, 1.0f);
 	initLevel();
 	initShaders();
-<<<<<<< Updated upstream
-=======
 }
 
 void MainGame::initLevel() {
@@ -118,22 +116,12 @@ void MainGame::initLevel() {
 		humans.back()->init(1.0f, pos);
 	}
 
->>>>>>> Stashed changes
 }
 
 void MainGame::draw() {
 	glClearDepth(1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	program.use();
-<<<<<<< Updated upstream
-	GLuint timeLocation = program.getUniformLocation("time");
-	glUniform1f(timeLocation, time);
-	time += 0.02; //asi se ve lindo uwu
-	sprite.draw();
-	program.unuse();
-	//si tengo elementos actualizo
-	SDL_GL_SwapWindow(window);
-=======
 	glActiveTexture(GL_TEXTURE0);
 
 	glm::mat4 cameraMatrix = camera2D.getCameraMatrix();
@@ -153,15 +141,10 @@ void MainGame::draw() {
 	glBindTexture(GL_TEXTURE_2D, 0);
 	program.unuse();
 	window.swapWindow();
->>>>>>> Stashed changes
 }
 
 void MainGame::run() {
 	init();
-<<<<<<< Updated upstream
-	sprite.init(-1, -1, 1, 1);
-=======
->>>>>>> Stashed changes
 	update();
 }
 
@@ -176,23 +159,9 @@ void MainGame::updateElements() {
 void MainGame::update() {
 	while (gameState != GameState::EXIT) {
 		draw();
-<<<<<<< Updated upstream
-=======
 		camera2D.update();
 		camera2D.setPosition(player->getPosition());
->>>>>>> Stashed changes
 		processInput();
 		updateElements();
 	}
-<<<<<<< Updated upstream
 }
-void MainGame::initShaders() {
-	program.compileShaders("Shaders/colorShaderVert.txt", "Shaders/colorShaderFrag.txt");
-	program.addAtribute("vertexPosition");
-	program.addAtribute("vertexColor");
-	program.linkShader();
-}
-
-=======
-}
->>>>>>> Stashed changes
