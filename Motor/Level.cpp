@@ -10,11 +10,16 @@ Level::Level(const string& fileName)
 	if (file.fail()) {
 		fatalError("Fallo al abrir " + fileName);
 	}
-	string tmp;
+	string tmp, tmp2;
 	file >> tmp >> numHumans;
 	getline(file, tmp);
+	file >> tmp2 >> numZombies;
+	getline(file, tmp2);
 	while (getline(file, tmp)) {
 		levelData.push_back(tmp);
+	}
+	while (getline(file, tmp2)) {
+		levelData.push_back(tmp2);
 	}
 	parseLevel();
 }

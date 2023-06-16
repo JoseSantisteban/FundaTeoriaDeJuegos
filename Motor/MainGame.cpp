@@ -83,7 +83,7 @@ void MainGame::initShaders()
 
 void MainGame::init() {
 	SDL_Init(SDL_INIT_EVERYTHING);
-	window.create("Mundo 1", width, height,0);
+	window.create("TA3", width, height,0);
 	GLenum error = glewInit();
 	if (error != GLEW_OK) {
 		fatalError("Glew not initialized");
@@ -99,7 +99,7 @@ void MainGame::initLevel() {
 	currentLevel = 0;
 	//inicializar humans,player y zombie
 	player = new Player();
-	player->init(1.0f, levels[currentLevel]->getPlayerPosition(), &inputManager);
+	player->init(5.0f, levels[currentLevel]->getPlayerPosition(), &inputManager);
 	spriteBatch.init();
 
 	std::mt19937 randomEngine(time(nullptr));
@@ -115,7 +115,14 @@ void MainGame::initLevel() {
 			randPosY(randomEngine) * TILE_WIDTH);
 		humans.back()->init(1.0f, pos);
 	}
-
+	
+	for (size_t i = 0; i < levels[currentLevel]->getNumZombies(); i++)
+	{
+		zombies.push_back(new Zombie());
+		glm::vec2 pos(randPosX(randomEngine) * TILE_WIDTH,
+			randPosY(randomEngine) * TILE_WIDTH);
+		zombies.back()->init(0.0f, pos);
+	}
 }
 
 void MainGame::draw() {
@@ -136,6 +143,11 @@ void MainGame::draw() {
 	{
 		humans[i]->draw(spriteBatch);
 	}
+	
+	for (size_t i = 0; i < zombies.size(); i++)
+	{
+		zombies[i]->draw(spriteBatch);
+	}
 	spriteBatch.end();
 	spriteBatch.renderBatch();
 	glBindTexture(GL_TEXTURE_2D, 0);
@@ -153,6 +165,10 @@ void MainGame::updateElements() {
 	for (size_t i = 0; i < humans.size(); i++)
 	{
 		humans[i]->update(levels[currentLevel]->getLevelData(),humans,zombies);
+	}
+	for (size_t i = 0; i < zombies.size(); i++)
+	{
+		zombies[i]->update(levels[currentLevel]->getLevelData(), humans, zombies);
 	}
 }
 
