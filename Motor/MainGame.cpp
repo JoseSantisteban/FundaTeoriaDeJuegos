@@ -25,11 +25,11 @@ void MainGame::processInput() {
 				gameState = GameState::EXIT;
 				break;
 			case SDL_MOUSEMOTION:
-				//cout << "Posicion del mousec " << event.motion.x << " " << event.motion.y << endl;
+				/*cout << "Posicion del mousec " << event.motion.x << " " << event.motion.y << endl;
 				inputManager.setMouseCoords(event.motion.x, event.motion.y);
 				glm::vec2 mouseCoords = camera2D.convertToScreenWorld(inputManager.getMouseCoords());
 				//cout << "Nueva posicion de acuerdo a camara " <<  mouseCoords.x
-					//	<< " " << mouseCoords.y << endl;
+					//	<< " " << mouseCoords.y << endl;*/
 				break;
 			case SDL_KEYUP:
 				inputManager.releaseKey(event.key.keysym.sym);
@@ -61,6 +61,7 @@ void MainGame::handleInput()
 	}
 	if (inputManager.isKeyPressed(SDL_BUTTON_LEFT)) {
 		//cout << "CLICK IZQUIERDO" << endl;
+		createBullet();
 	}
 
 	if (inputManager.isKeyPressed(SDL_BUTTON_RIGHT)) {
@@ -70,6 +71,23 @@ void MainGame::handleInput()
 	if (inputManager.isKeyPressed(SDL_BUTTON_MIDDLE)) {
 		//cout << "CLICK CENTRO" << endl;
 	}
+	if (inputManager.isKeyPressed(SDLK_f)) {
+		cout << "Numero de Zombies " << levels[currentLevel]->getNumZombies() << endl;
+		cout << "Numero de Humanos " << levels[currentLevel]->getNumHumans() << endl;
+	}
+}
+
+void MainGame::createBullet() {
+	glm::vec2 mouseCoords = 
+			camera2D.convertToScreenWorld(inputManager.getMouseCoords());
+	glm::vec2 playerPosition(0, 0);
+	glm::vec2 direction = mouseCoords - player->getPosition();
+	direction = glm::normalize(direction);
+	//bullets.emplace_back(playerPosition, direction, 1.0f, 1000);
+	
+	//bullets.push_back(new Bullet(playerPosition, direction, 1.0f, 1000));
+	Bullet* bullet = new Bullet(player->getPosition(), direction, 1.0f, 1000);
+	bullets.push_back(bullet);
 }
 
 void MainGame::initShaders()
@@ -88,7 +106,6 @@ void MainGame::init() {
 	if (error != GLEW_OK) {
 		fatalError("Glew not initialized");
 	}
-	
 	glClearColor(0.7f, 0.7f, 0.7f, 1.0f);
 	initLevel();
 	initShaders();
@@ -99,8 +116,9 @@ void MainGame::initLevel() {
 	currentLevel = 0;
 	//inicializar humans,player y zombie
 	player = new Player();
-	player->init(1.0f, levels[currentLevel]->getPlayerPosition(), &inputManager);
+	player->init(5.0f, levels[currentLevel]->getPlayerPosition(), &inputManager);
 	spriteBatch.init();
+	hudBatch.init();
 
 	std::mt19937 randomEngine(time(nullptr));
 	std::uniform_int_distribution<int>randPosX(
@@ -108,6 +126,7 @@ void MainGame::initLevel() {
 	std::uniform_int_distribution<int>randPosY(
 		1, levels[currentLevel]->getHeight() - 2);
 
+	
 	for (size_t i = 0; i < levels[currentLevel]->getNumHumans(); i++)
 	{
 		humans.push_back(new Human());
@@ -115,6 +134,24 @@ void MainGame::initLevel() {
 			randPosY(randomEngine) * TILE_WIDTH);
 		humans.back()->init(1.0f, pos);
 	}
+	//Crear mismo numero de zombies según el numero de humanos
+	for (size_t i = 0; i < levels[currentLevel]->getNumZombies(); i++)
+	{
+		zombies.push_back(new Zombie());
+		glm::vec2 pos(randPosX(randomEngine) * TILE_WIDTH,
+			randPosY(randomEngine) * TILE_WIDTH);
+		zombies.back()->init(1.3f, pos);
+	}
+
+	const std::vector<glm::vec2>& zombiePosition =
+		levels[currentLevel]->getZombiesPosition();
+
+	for (size_t i = 0; i < zombiePosition.size(); i++)
+	{
+		zombies.push_back(new Zombie());
+		zombies.back()->init(1.3f, zombiePosition[i]);
+	}
+	spriteFont = new SpriteFont("Fonts/arial.ttf",64);
 
 }
 
@@ -136,11 +173,37 @@ void MainGame::draw() {
 	{
 		humans[i]->draw(spriteBatch);
 	}
+	for (size_t i = 0; i < bullets.size(); i++)
+	{
+		bullets[i]->draw(spriteBatch);
+	}
+	for (size_t i = 0; i < zombies.size(); i++)
+	{
+		zombies[i]->draw(spriteBatch);
+	}
 	spriteBatch.end();
 	spriteBatch.renderBatch();
+	drawHud();
 	glBindTexture(GL_TEXTURE_2D, 0);
 	program.unuse();
 	window.swapWindow();
+}
+
+void MainGame::drawHud()
+{
+	glm::mat4 cameraMatrix = camera2D.getCameraMatrix();
+	GLuint pCameraLocation = program.getUniformLocation("pCamera");
+	glUniformMatrix4fv(pCameraLocation, 1, GL_FALSE, &(cameraMatrix[0][0]));
+
+	char buffer[256];
+	hudBatch.begin();
+	sprintf_s(buffer, "HOLAAAAAAA");
+	Color color;
+	color.set(255, 255, 255, 255);
+	spriteFont->draw(hudBatch, buffer, glm::vec2(0, 0),
+		glm::vec2(0.5), 0.0f, Color(255,255,255,255));
+	hudBatch.end();
+	hudBatch.renderBatch();
 }
 
 void MainGame::run() {
@@ -153,6 +216,32 @@ void MainGame::updateElements() {
 	for (size_t i = 0; i < humans.size(); i++)
 	{
 		humans[i]->update(levels[currentLevel]->getLevelData(),humans,zombies);
+	}
+	for (size_t i = 0; i < zombies.size(); i++) {
+		zombies[i]->update(levels[currentLevel]->getLevelData(), humans, zombies);
+
+		for (size_t j = 0; j < humans.size(); j++)
+		{
+			if (zombies[i]->collideWithAgent(humans[j])) {
+				zombies.push_back(new Zombie());
+				zombies.back()->init(1.3f, humans[j]->getPosition());
+				delete humans[j];
+				humans[j] = humans.back();
+				humans.pop_back();
+				levels[currentLevel]->numHumans--;
+				levels[currentLevel]->numZombies++;
+			}
+		}
+	}
+	for (size_t i = 0; i < bullets.size();)
+	{
+		if (bullets[i]->update()) {
+			bullets[i] = bullets.back();
+			bullets.pop_back();
+		}
+		else {
+			i++;
+		}
 	}
 }
 

@@ -9,18 +9,24 @@ class Level
 {
 private:
 	vector<string> levelData;
-	int numHumans;
+	
 	void parseLevel();
 	glm::vec2 playerPosition;
 	vector<glm::vec2> zombiesPosition;
 	SpriteBatch spriteBatch;
 public:
-	int getNumHumans()const {
+	int numHumans;
+	int numZombies;
+	int getNumZombies() {
+		return numZombies;
+	}
+	int getNumHumans() {
 		return numHumans;
 	}
 	glm::vec2 getPlayerPosition()const {
 		return playerPosition;
 	}
+
 	vector<glm::vec2> getZombiesPosition() {
 		return zombiesPosition;
 	}
